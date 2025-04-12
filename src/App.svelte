@@ -171,16 +171,8 @@ function processMessageData(messageData) {
         colorShift: colorShift
       };
       }
-      // console.log(latest_value)
-      // planetParams = {
-      //   amplitude: amplitude,
-      //   frequency: frequency,
-      //   speed: speed,
-      //   turbulence: turbulence,
-      //   colorShift: colorShift
-      // };      
+
       requestAnimationFrame(animate);
-      // Update planet parameters if planet component is initialized
       if (planet && typeof planet.updatePlanet === 'function') {
         planet.updatePlanet(planetParams);
       }

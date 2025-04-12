@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import vertexShader from '../shaders/particle.vert?raw';
+import fragmentShader from '../shaders/particle.frag?raw';
 
 /**
  * Sets up the Three.js scene, camera, and renderer
@@ -62,9 +64,24 @@ export function createStars(scene) {
   }
   
   starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
-  const starsMaterial = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 0.1 });
-  const stars = new THREE.Points(starsGeometry, starsMaterial);
+  const sprite = new THREE.TextureLoader().load( 'textures/sprites/circle.png' );
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+        sprite: { value: sprite },
+        time: { value: 0.0 }
+
+    },
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending  // Important for glow effect
+  });
+  const stars = new THREE.Points(starsGeometry, material);
   
   scene.add(stars);
+
+
   return stars;
 }

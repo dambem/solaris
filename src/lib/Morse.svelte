@@ -4,7 +4,7 @@
     import * as Tone from 'tone';
     
     // Sound control states
-    let isPlaying = false;
+    let isPlaying = true;
     let volume = 0.7;
     let pingFrequency = 0.1;  // How often random pings occur (0-1)
     let rumbleDepth = 0.6;    // Intensity of the deep rumble (0-1)
