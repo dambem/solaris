@@ -1,17 +1,17 @@
 <!-- GeminiChat.svelte -->
 <script>
     import { onMount } from 'svelte';
-    
+    import promptContent from '../lib/agent.md?raw';
+
     // Component props
     export let apiKey = ''; // Gemini API key
     export let modelName = 'gemini-2.0-flash'; // Default model
-    
     // Component state
     let userInput = '';
     let messages = [];
     let isLoading = false;
     let error = null;
-    let promptPath = '/src/lib/agent.md'
+    // let promptPath = './src/lib/agent.md'
     let systemPrompt
     export let lastMessage;
     let debug = false;
@@ -19,12 +19,12 @@
 
     async function loadPromptFile() {
     try {
-      const response = await fetch(promptPath);
-      if (!response.ok) {
-        throw new Error(`Failed to load prompt file: ${response.statusText}`);
-      }
+      // const response = await fetch(promptPath);
+      // if (!response.ok) {
+      //   throw new Error(`Failed to load prompt file: ${response.statusText}`);
+      // }
       
-      systemPrompt = await response.text();
+      systemPrompt = promptContent
       console.log('Loaded system prompt from markdown file');
       
       // Initialize messages with system prompt
