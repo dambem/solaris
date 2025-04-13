@@ -9,8 +9,8 @@
     // Initialize planet
     let planetMesh;
     let planetMaterial;
-    const planetRadius = 2;
-    const planetSegments = 128;
+    const planetRadius = 3.8;
+    const planetSegments = 2548;
     
     // Method that will be exposed to parent component
     export function updatePlanet(params) {
@@ -28,7 +28,9 @@
         
         // Rotate planet slowly
         if (planetMesh) {
-            planetMesh.rotation.y += 0.002;
+            planetMesh.position.y = 0
+            planetMesh.position.x = 3
+            planetMesh.rotation.y += 0.001;
         }
     }
     

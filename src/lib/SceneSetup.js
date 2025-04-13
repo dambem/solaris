@@ -13,12 +13,12 @@ export function setupScene(container) {
   
   // Create camera
   const camera = new THREE.PerspectiveCamera(
-    75, 
+    40, 
     window.innerWidth / window.innerHeight, 
     0.1, 
     1000
   );
-  camera.position.z = 5;
+  camera.position.z = 12;
   
   // Create renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -53,13 +53,13 @@ export function setupScene(container) {
  */
 export function createStars(scene) {
   const starsGeometry = new THREE.BufferGeometry();
-  const starsCount = 1000;
+  const starsCount = 100000;
   const starsPositions = [];
   
   for (let i = 0; i < starsCount; i++) {
-    const x = (Math.random() - 0.5) * 100;
-    const y = (Math.random() - 0.5) * 100;
-    const z = (Math.random() - 0.5) * 100;
+    const x = (Math.random() - 0.5) * 50;
+    const y = (Math.random() - 0.5) * 50;
+    const z = (Math.random() - 0.5) * 50;
     starsPositions.push(x, y, z);
   }
   
@@ -69,14 +69,18 @@ export function createStars(scene) {
   const material = new THREE.ShaderMaterial({
     uniforms: {
         sprite: { value: sprite },
-        time: { value: 0.0 }
+        time: { value: 0.0 },
+        glowColor: {value: new THREE.Color(0x88ffaa)},
+        waterColor: {value: new THREE.Color(0x88ffaa)},
+        intensity: {value:2.0}
 
     },
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending  // Important for glow effect
+    blending: THREE.AdditiveBlending,  
+
   });
   const stars = new THREE.Points(starsGeometry, material);
   

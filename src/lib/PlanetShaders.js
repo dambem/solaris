@@ -9,6 +9,11 @@ export const planetVertexShader = `
   uniform float frequency;
   uniform float speed;
   uniform float turbulence;
+
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+
+
     float rand(vec2 co)
     {
     return fract(sin(dot(co.xy,vec2(12.9898,78.233))) * 43758.5453);
@@ -23,11 +28,13 @@ export const planetVertexShader = `
   
   void main() {
     vUv = uv;
-    
-    // Calculate river-like patterns based on latitude (y coordinate)
+    vNormal = normalize(normalMatrix*normal);
+    vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     float latitude = asin(position.y / length(position));
     float longitude = asin(position.x / length(position));
-    float riverPattern = sin(latitude * rand(vUv)*0.5 * frequency * 10.0 + time * speed)*cos(longitude * rand(vUv)*0.5 * frequency * 10.0);
+    float langonitude = asin(position.z / length(position));
+    float riverPattern = sin(latitude * rand(vUv)*0.1 * frequency * 2.0 + time * speed)*sin(longitude * rand(vUv)*0.1 * frequency * 0.8)*sin(langonitude * rand(vUv)*0.2 * frequency * 0.5);
     
     // Add some noise based on position
     vec3 p = position * 2.0;
@@ -55,12 +62,27 @@ export const planetFragmentShader = `
   varying vec2 vUv;
   varying float vDisplacement;
   uniform float time;
+  varying vec3 vNormal;
+  varying vec3 vPosition;
 
+  
+  uniform float intensity;
+  uniform vec3 glowColor;
+  uniform vec3 waterColorI;
+
+    float rand(vec2 co)
+    {
+    return fract(sin(dot(co.xy,vec2(12.9898,78.233))) * 43758.5453);
+    }
   void main() {
     // Base blue color for water
-    vec3 waterColor = vec3(0.0, 0.3, 0.6);
-    float shimmer = sin(vUv.x * 20.0 + vUv.y * 15.0 + time * 2.0) * 0.05;
+    vec3 waterColor = waterColorI;
   
+    float shimmer = sin(vUv.x * 20.0 + vUv.y * 15.0 + time * 2.0) * 0.05;
+    vec3 viewDirection = normalize(-vPosition);
+    float fresnel = dot(viewDirection, vNormal);
+    fresnel = pow(fresnel, 3.0) * intensity;
+
     // Adjust color based on displacement
     float intensity = vDisplacement * 5.0;
 
@@ -69,20 +91,19 @@ export const planetFragmentShader = `
     // Create shifting color effect
     vec3 finalColor = mix(
       waterColor,
-      vec3(0.0, 1.0*colorShift, 1.0*colorShift),
-      abs(intensity) + colorShift
+      vec3(1.0*colorShift+rand(vUv)*0.1, 1.0*colorShift, 1.0*colorShift),
+      abs(intensity) + colorShift * fresnel
     );
     
     // Add highlight for river crests
     if (intensity > 0.05) {
-      finalColor = mix(finalColor, vec3(0.3, 0.9, 1.0), intensity * 2.0);
+      finalColor = mix(finalColor, vec3(0.5, 0.5, 1.0), intensity * 2.0);
     }
     
     // Add depth for river troughs
     if (intensity < -0.05) {
-      finalColor = mix(finalColor, vec3(0.0, 0.1, 0.3), abs(intensity) * 2.0);
+      finalColor = mix(finalColor, vec3(0.957, 0.5, 0.9), abs(intensity) * 2.0);
     }
-    
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = vec4(finalColor, fresnel);
   }
 `;

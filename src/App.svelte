@@ -19,7 +19,7 @@
   let scene, camera, renderer;
   let planet;
   let amplitude = 0.5;
-  let frequency = 0.5;
+  let frequency = 10;
   let turbulence = 0.5;
   let colorShift = 0;
   let speed = 0.2;
@@ -43,17 +43,134 @@
   };
   function parseStringToObject(inputString) {
   try {
-    // Convert the string to a valid JSON format
-    // 1. Replace property names without quotes with quoted property names
-    // 2. Replace single quotes with double quotes
-    const jsonString = inputString
-      .replace(/(\w+):/g, '"$1":')  // Add quotes around property names
-      .replace(/'/g, '"');          // Replace single quotes with double quotes
+    // Check for markdown code blocks with ```<language>
+    // Support json, javascript, js and typescript formats
+    const codeBlockRegex = /```(json|javascript|js|typescript|ts)\s*([\s\S]*?)```/;
+    const codeBlockMatch = inputString.match(codeBlockRegex);
     
-    // Parse the JSON string to an object
-    return JSON.parse(jsonString);
+    if (codeBlockMatch && codeBlockMatch[2]) {
+      // Extract content from the code block
+      inputString = codeBlockMatch[2].trim();
+      
+      // Check if the content starts with an object literal
+      if (!inputString.trimStart().startsWith('{')) {
+        throw new Error('Code block does not contain a valid object literal');
+      }
+    }
+    
+    // Check if the input string appears to be an object
+    if (!inputString.trimStart().startsWith('{')) {
+      throw new Error('Input does not appear to be a JSON object');
+    }
+    
+    // Check if the input is already valid JSON
+    try {
+      return JSON.parse(inputString);
+    } catch (initialError) {
+      // If not valid JSON, continue with custom parsing
+    }
+    
+    // Handle trailing commas which are invalid in JSON
+    const withoutTrailingCommas = inputString.replace(/,(\s*[}\]])/g, '$1');
+    
+    // Process the string character by character for maximum robustness
+    let result = '';
+    let i = 0;
+    let inString = false;
+    let inPropName = false;
+    let currentPropName = '';
+    let stringDelimiter = '';
+    
+    // First, handle property names with spaces and special characters
+    while (i < withoutTrailingCommas.length) {
+      const char = withoutTrailingCommas[i];
+      const nextChar = i < withoutTrailingCommas.length - 1 ? withoutTrailingCommas[i + 1] : '';
+      
+      // Handle string literals
+      if ((char === '"' || char === "'") && (i === 0 || withoutTrailingCommas[i - 1] !== '\\')) {
+        if (!inString) {
+          // Starting a new string
+          inString = true;
+          stringDelimiter = char;
+          result += '"'; // Always use double quotes in JSON
+        } else if (char === stringDelimiter) {
+          // Ending the current string
+          inString = false;
+          result += '"'; // Always use double quotes in JSON
+        } else {
+          // This is a different quote character inside a string
+          result += char;
+        }
+        i++;
+        continue;
+      }
+      
+      if (inString) {
+        // Inside a string, preserve everything except convert single quotes to double if needed
+        if (stringDelimiter === "'" && char === "'") {
+          result += '"';
+        } else {
+          result += char;
+        }
+        i++;
+        continue;
+      }
+      
+      // Handle property names
+      if (!inPropName && (char.match(/[a-zA-Z0-9_$]/) || char === '-') && 
+          (i === 0 || withoutTrailingCommas[i - 1].match(/[{,\s]/))) {
+        // Starting a new property name
+        inPropName = true;
+        currentPropName = char;
+      } else if (inPropName) {
+        if (char === ':') {
+          // End of property name, add quotes
+          result += `"${currentPropName}":`;
+          inPropName = false;
+          currentPropName = '';
+        } else if (char.match(/[a-zA-Z0-9_$\s-]/)) {
+          // Continue building property name, including spaces
+          currentPropName += char;
+        } else {
+          // Something unexpected, reset state
+          result += currentPropName + char;
+          inPropName = false;
+          currentPropName = '';
+        }
+      } else {
+        // Not in a property name or string, copy as-is
+        result += char;
+      }
+      
+      i++;
+    }
+    
+    // Add any remaining property name
+    if (inPropName) {
+      result += `"${currentPropName}"`;
+    }
+    
+    // Process the result to handle any nested objects and arrays
+    let processedResult = result;
+    let maxIterations = 5; // Prevent infinite loops
+    let lastResult = '';
+    
+    // Repeatedly process the string until no more changes are made
+    while (lastResult !== processedResult && maxIterations > 0) {
+      lastResult = processedResult;
+      
+      // Fix property names in nested objects
+      processedResult = processedResult.replace(/({|,)\s*([a-zA-Z0-9_$-]+)(\s+):/g, '$1"$2":');
+      processedResult = processedResult.replace(/({|,)\s*([a-zA-Z0-9_$-]+[\s]+[a-zA-Z0-9_$-]+)(\s*):/g, '$1"$2":');
+      
+      maxIterations--;
+    }
+    
+    // Parse the properly formatted JSON string to an object
+    return JSON.parse(processedResult);
   } catch (error) {
-    console.error("Error parsing string:", error);
+    console.error("Error parsing string:", error.message);
+    console.log("Original input:", inputString);
     return null;
   }
 }
@@ -158,19 +275,18 @@ function processMessageData(messageData) {
         const latest_value = parseStringToObject(latestMessage.content);
         if (latest_value) {
           processMessageData(latest_value);
-          // Clear latestMessage to avoid reprocessing
           latestMessage = null;
         }
       }
-      else{
-        planetParams = {
-        amplitude: amplitude,
-        frequency: frequency,
-        speed: speed,
-        turbulence: turbulence,
-        colorShift: colorShift
-      };
-      }
+      // else{
+      //   planetParams = {
+      //   amplitude: amplitude,
+      //   frequency: frequency,
+      //   speed: speed,
+      //   turbulence: turbulence,
+      //   colorShift: colorShift
+      // };
+      // }
 
       requestAnimationFrame(animate);
       if (planet && typeof planet.updatePlanet === 'function') {
@@ -206,7 +322,7 @@ function processMessageData(messageData) {
     <input 
       type="range" 
       min="0.01" 
-      max="0.9" 
+      max="10" 
       step="0.01"
       bind:value={amplitude}
       class="w-full"
@@ -215,7 +331,7 @@ function processMessageData(messageData) {
     <input 
       type="range" 
       min="0.0" 
-      max="10" 
+      max="100" 
       step="0.01"
       bind:value={frequency}
       class="w-full"
@@ -260,7 +376,6 @@ function processMessageData(messageData) {
     {#if showApiKeyInput}
       <div class="api-key-setup">
         <h2>Enter your Gemini API Key</h2>
-        <p>You'll need a Google AI API key to use this component. This key will only be stored in memory for this session.</p>
         
         <div class="input-group">
           <input 
