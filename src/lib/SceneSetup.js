@@ -71,8 +71,9 @@ export function createStars(scene) {
         sprite: { value: sprite },
         time: { value: 0.0 },
         glowColor: {value: new THREE.Color(0x88ffaa)},
-        waterColor: {value: new THREE.Color(0x88ffaa)},
-        intensity: {value:2.0}
+        waterColorI: {value: new THREE.Color(0xaaffdd)},
+        intensity: {value:2.0},
+        sunPosition: {value: [-500, -10, -10]}
 
     },
     vertexShader: vertexShader,

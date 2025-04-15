@@ -18,7 +18,8 @@
   let container;
   let scene, camera, renderer;
   let planet;
-  let amplitude = 0.5;
+  let sound;
+  let amplitude = 5;
   let frequency = 10;
   let turbulence = 0.5;
   let colorShift = 0;
@@ -27,13 +28,31 @@
   let latestMessage;
   let latest_value;
   let animations = {};
+
+
+  let volume = 0.7;
+  let pingFrequency = 0.1;  // How often random pings occur (0-1)
+  let rumbleDepth = 0.6;    // Intensity of the deep rumble (0-1)
+  let filterSweep = 0.05;   // Speed of filter modulation (0.01-0.2)
+  let reverbAmount = 0.7;   // Amount of reverb (0-1)
+  let staticLevel = 0.2;    // Level of radio static (0-1)
+
   let currentIndices = {
-  amplitude: 0,
-  frequency: 0,
-  speed: 0,
-  turbulence: 0,
-  colorShift: 0
-};
+    amplitude: 0,
+    frequency: 0,
+    speed: 0,
+    turbulence: 0,
+    colorShift: 0
+  };
+
+  let morseParams = {
+    volume: volume,
+    rumbleDepth: rumbleDepth,
+    filterSweep: filterSweep,
+    reverbAmount: reverbAmount,
+    staticLevel: staticLevel
+  }
+
   let planetParams = {
     amplitude: amplitude,
     frequency: frequency,
@@ -243,10 +262,7 @@ function processMessageData(messageData) {
   });
   animations = {};
   }
-  // if (data.description) {
-  //   // Update description display
-  //   console.log("Description:", data.description);
-  // }
+
 }
 
   onMount(() => {
@@ -270,7 +286,6 @@ function processMessageData(messageData) {
     
     // Animation loop
     const animate = () => {
-      // console.log(latestMessage)
       if (latestMessage) {
         const latest_value = parseStringToObject(latestMessage.content);
         if (latest_value) {
@@ -278,19 +293,18 @@ function processMessageData(messageData) {
           latestMessage = null;
         }
       }
-      // else{
-      //   planetParams = {
-      //   amplitude: amplitude,
-      //   frequency: frequency,
-      //   speed: speed,
-      //   turbulence: turbulence,
-      //   colorShift: colorShift
-      // };
-      // }
 
       requestAnimationFrame(animate);
       if (planet && typeof planet.updatePlanet === 'function') {
         planet.updatePlanet(planetParams);
+        morseParams.volume = frequency*0.1;
+        morseParams.rumbleDepth = frequency*0.05;
+        morseParams.filterSweep = Math.sin(speed*frequency)*0.01;
+        morseParams.reverbAmount = speed*0.1;
+        morseParams.staticLevel = turbulence*0.2;
+        morseParams.pingFrequency =colorShift*0.5;
+
+        sound.updateMusic(morseParams);
       }
       
       renderer.render(scene, camera);
@@ -298,7 +312,6 @@ function processMessageData(messageData) {
     
     animate();
     
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener('resize', handleResize);
       if (renderer) renderer.dispose();
@@ -315,67 +328,24 @@ function processMessageData(messageData) {
 <main>
   {#if debug}
   <div class="card">
-    <!-- <Morse /> -->
-    <!-- <MorseInput /> -->
+    <Morse  bind:this={sound} />
+    <!-- <br> -->
+    <!-- <MorseInput/> -->
     <div class="mb-3">
-    <label class="block mb-1 text-sm">Amplitude</label>
-    <input 
-      type="range" 
-      min="0.01" 
-      max="10" 
-      step="0.01"
-      bind:value={amplitude}
-      class="w-full"
-    />
-    <label class="block mb-1 text-sm">Frequency</label>
-    <input 
-      type="range" 
-      min="0.0" 
-      max="100" 
-      step="0.01"
-      bind:value={frequency}
-      class="w-full"
-    />
-    </div>
-    <div class="mb-3">
-      <label class="block mb-1 text-sm">Speed</label>
-      <input 
-        type="range" 
-        min="0.01" 
-        max="10.9" 
-        step="0.01"
-        bind:value={speed}
-        class="w-full"
-      />
-      <label class="block mb-1 text-sm">Turbulence</label>
-      <input 
-        type="range" 
-        min="1.0" 
-        max="25" 
-        step="0.01"
-        bind:value={turbulence}
-        class="w-full"
-      />
-      </div>
       <div class="mb-3">
-        <label class="block mb-1 text-sm">Color Shift</label>
-        <input 
-          type="range" 
-          min="0.0" 
-          max="10.0" 
-          step="0.01"
-          bind:value={colorShift}
-          class="w-full"
-        />
 
-        </div>
+        <!-- <div class="flex justify-between text-xs">
+          <span>{morseParams.rumbleDepth}</span>
+        </div> -->
+      </div> 
+      </div>
   </div>
   {/if}
   <div class="card">
     
     {#if showApiKeyInput}
       <div class="api-key-setup">
-        <h2>Enter your Gemini API Key</h2>
+        <!-- <h2>Enter your Gemini API Key</h2> -->
         
         <div class="input-group">
           <input 

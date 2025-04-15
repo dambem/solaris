@@ -4,7 +4,7 @@
     import * as Tone from 'tone';
     
     // Sound control states
-    let isPlaying = true;
+    let isPlaying = false;
     let volume = 0.7;
     let pingFrequency = 0.1;  // How often random pings occur (0-1)
     let rumbleDepth = 0.6;    // Intensity of the deep rumble (0-1)
@@ -24,6 +24,15 @@
     
     // Boolean to track if audio is initialized
     let audioInitialized = false;
+
+    export function updateMusic(params) {
+      volume = params.volume
+      rumbleDepth = params.rumbleDepth
+      filterSweep = params.filterSweep
+      reverbAmount = params.reverbAmount
+      staticLevel = params.staticLevel
+      pingFrequency = params.pingFrequency
+    }
     
     // Initialize audio once on component mount
     onMount(async () => {
@@ -330,11 +339,11 @@
           on:click={togglePlay}
           class={`px-4 py-2 rounded-md font-bold ${isPlaying ? 'bg-red-800 hover:bg-red-900 text-white' : 'bg-green-800 hover:bg-green-900 text-white'}`}
         >
-          {isPlaying ? 'Stop' : 'Start'}
+          {isPlaying ? 'Stop Audio' : 'Start Audio'}
         </button>
       </div>
       
-      <div class="mb-4">
+      <!-- <div class="mb-4">
         <label class="block mb-2">Master Volume:</label>
         <input 
           type="range" 
@@ -344,12 +353,9 @@
           bind:value={volume}
           class="w-full"
         />
-      </div>
-      
-      <div class="mb-1 mt-4">
-        <h3 class="font-bold text-lg">Deep Ocean Effects:</h3>
-      </div>
-      
+      </div> -->
+
+<!--       
       <div class="mb-3">
         <label class="block mb-1 text-sm">Deep Rumble Intensity:</label>
         <input 
@@ -364,71 +370,10 @@
           <span>Subtle</span>
           <span>Intense</span>
         </div>
-      </div>
+      </div> -->
       
-      <div class="mb-3">
-        <label class="block mb-1 text-sm">Sonar Ping Frequency:</label>
-        <input 
-          type="range" 
-          min="0" 
-          max="0.5" 
-          step="0.01"
-          bind:value={pingFrequency}
-          class="w-full"
-        />
-        <div class="flex justify-between text-xs">
-          <span>Rare</span>
-          <span>Frequent</span>
-        </div>
-      </div>
-      
-      <div class="mb-3">
-        <label class="block mb-1 text-sm">Current Fluctuation:</label>
-        <input 
-          type="range" 
-          min="0.01" 
-          max="0.2" 
-          step="0.01"
-          bind:value={filterSweep}
-          class="w-full"
-        />
-        <div class="flex justify-between text-xs">
-          <span>Calm</span>
-          <span>Turbulent</span>
-        </div>
-      </div>
-      
-      <div class="mb-3">
-        <label class="block mb-1 text-sm">Reverb Depth:</label>
-        <input 
-          type="range" 
-          min="0.2" 
-          max="1" 
-          step="0.01"
-          bind:value={reverbAmount}
-          class="w-full"
-        />
-        <div class="flex justify-between text-xs">
-          <span>Shallow</span>
-          <span>Abyssal</span>
-        </div>
-      </div>
-      
-      <div class="mb-3">
-        <label class="block mb-1 text-sm">Radio Static:</label>
-        <input 
-          type="range" 
-          min="0" 
-          max="0.6" 
-          step="0.01"
-          bind:value={staticLevel}
-          class="w-full"
-        />
-        <div class="flex justify-between text-xs">
-          <span>Clear</span>
-          <span>Noisy</span>
-        </div>
-      </div>
+
+
     </div>
 
   </div>

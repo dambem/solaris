@@ -132,15 +132,15 @@
     }
   </script>
   
-  <div class="gemini-chat-container">
-    <div class="chat-header">
+  <div class="retro-container">
+    <div class="morse-display">
       {#if !apiKey}
         <div class="api-key-warning">Please provide an API key to use this component</div>
       {/if}
     </div>
     {#if debug}
 
-    <div class="messages-container">
+    <div class="control-panel">
         {#each messages.slice(1).filter((msg => msg.role !== 'system')) as message, i (i)}
         
           <div class="message {message.role}">
@@ -155,11 +155,7 @@
       {#if isLoading }
           {#if debug}
         <div class="message assistant loading">
-          <div class="message-content">
-            <div class="loading-indicator">
-              <span>.</span><span>.</span><span>.</span>
-            </div>
-          </div>
+
         </div>
         {/if}
       {/if}
@@ -172,13 +168,13 @@
       </div>
     {/if}
   
-    <div class="input-container">
-      <textarea 
+    <div class="control-panel">
+      <input 
         bind:value={userInput} 
         placeholder="Type your message here..." 
         on:keydown={handleKeydown}
         disabled={isLoading || !apiKey}
-      ></textarea>
+      />
       <button 
         on:click={sendMessage} 
         disabled={isLoading || !userInput.trim() || !apiKey}
@@ -189,161 +185,105 @@
   </div>
   
   <style>
-    .gemini-chat-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 400px;
-      max-width: 800px;
+    .retro-container {
+      font-family: 'Courier New', monospace;
+      max-width: 500px;
       margin: 0 auto;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      background-color: #111;
+      border-radius: 10px;
+      border: 4px solid #444;
+      padding: 20px;
+      color: #0f0;
+    }
+    
+    .ascii-display {
+      background-color: #000;
+      border: 2px solid #555;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
-  
-    .chat-header {
-      padding: 10px 15px;
-      background-color: #f0f4f8;
-      border-bottom: 1px solid #ddd;
-    }
-  
-    .chat-header h3 {
+    
+    .ascii-display pre {
       margin: 0;
-      font-size: 18px;
-      color: #333;
-    }
-  
-    .api-key-warning {
-      color: #cc3300;
       font-size: 14px;
-      margin-top: 5px;
+      line-height: 1.2;
+      color: #0f0;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
     }
-  
-    .messages-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 15px;
+    
+    .control-panel {
       display: flex;
-      flex-direction: column;
       gap: 10px;
-      background-color: #f9f9f9;
+      margin-bottom: 15px;
     }
-  
-    .message {
-      padding: 10px 15px;
-      border-radius: 8px;
-      max-width: 80%;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-  
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  
-    .message.user {
-      align-self: flex-end;
-      background-color: #e1f5fe;
-      color: #01579b;
-    }
-  
-    .message.assistant {
-      align-self: flex-start;
-      background-color: #e8f5e9;
-      color: #2e7d32;
-    }
-  
-    .message-header {
-      font-weight: bold;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-  
-    .message-content {
-      font-size: 15px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-  
-    .loading-indicator {
-      display: flex;
-      justify-content: flex-start;
-    }
-  
-    .loading-indicator span {
-      animation: loading 1.4s infinite ease-in-out both;
-      font-size: 24px;
-    }
-  
-    .loading-indicator span:nth-child(1) {
-      animation-delay: 0s;
-    }
-  
-    .loading-indicator span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-  
-    .loading-indicator span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-  
-    @keyframes loading {
-      0%, 80%, 100% {
-        opacity: 0.2;
-        transform: translateY(0);
-      }
-      40% {
-        opacity: 1;
-        transform: translateY(-5px);
-      }
-    }
-  
-    .error-message {
-      padding: 10px 15px;
-      background-color: #ffebee;
-      color: #c62828;
-      border-top: 1px solid #ffcdd2;
-      font-size: 14px;
-    }
-  
-    .input-container {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-      background-color: white;
-    }
-  
-    textarea {
+    
+    input {
       flex: 1;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 10px;
-      resize: none;
-      min-height: 60px;
-      font-family: inherit;
-      font-size: 15px;
-    }
-  
-    button {
-      margin-left: 10px;
-      padding: 0 20px;
-      background-color: #4a86e8;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 15px;
+      background-color: #222;
+      border: 2px solid #555;
+      border-radius: 5px;
+      padding: 8px 12px;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
       font-weight: bold;
-      transition: background-color 0.2s;
     }
-  
+    
+    input::placeholder {
+      color: #0a0;
+      opacity: 0.5;
+    }
+    
+    button {
+      background-color: #333;
+      color: #0f0;
+      border: 2px solid #0f0;
+      border-radius: 5px;
+      padding: 8px 16px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
     button:hover:not(:disabled) {
-      background-color: #3a76d8;
+      background-color: #0f0;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
     }
-  
+    
     button:disabled {
-      background-color: #cccccc;
+      opacity: 0.5;
       cursor: not-allowed;
+    }
+    
+    .morse-display {
+      background-color: #222;
+      border: 2px solid #555;
+      border-radius: 5px;
+      padding: 10px;
+      margin-top: 15px;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+      overflow-wrap: break-word;
+    }
+    
+    /* CRT effect */
+    .retro-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.15;
     }
   </style>

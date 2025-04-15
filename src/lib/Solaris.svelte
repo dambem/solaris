@@ -2,7 +2,9 @@
     import { onMount, createEventDispatcher } from 'svelte';
     import * as THREE from 'three';
     import { planetVertexShader, planetFragmentShader } from '../lib/PlanetShaders.js';
-    
+    import vertexShader from '../shaders/planet.vert?raw';
+    import fragmentShader from '../shaders/planet.frag?raw';
+
     // Props
     export let scene;
     
@@ -10,7 +12,7 @@
     let planetMesh;
     let planetMaterial;
     const planetRadius = 3.8;
-    const planetSegments = 2548;
+    const planetSegments = 2500;
     
     // Method that will be exposed to parent component
     export function updatePlanet(params) {
@@ -31,6 +33,8 @@
             planetMesh.position.y = 0
             planetMesh.position.x = 3
             planetMesh.rotation.y += 0.001;
+            planetMesh.rotation.z += 0.001;
+
         }
     }
     
@@ -53,8 +57,8 @@
                 turbulence: { value: 0.5 },
                 colorShift: { value: 0 }
             },
-            vertexShader: planetVertexShader,
-            fragmentShader: planetFragmentShader,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
             wireframe: false
         });
         
