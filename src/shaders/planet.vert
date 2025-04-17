@@ -24,11 +24,12 @@
     return sin(p.x*1.5) * sin(p.y*1.8) * sin(p.z*1.3);
   }
 
+  #pragma glslify: perlin4d = require('../partials/perlin4d.glsl')
+  #pragma glslify: perlin3d = require('../partials/perlin3d.glsl')
 
   #define MOD3 vec3(.1094,.1034,.123)
 
 
-  
   void main() {
         vec3 LightPos   = vec3(10., 20., 30.);
 

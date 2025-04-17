@@ -12,7 +12,7 @@
     let planetMesh;
     let planetMaterial;
     const planetRadius = 3.8;
-    const planetSegments = 2500;
+    const planetSegments = 3000;
     
     // Method that will be exposed to parent component
     export function updatePlanet(params) {
