@@ -13,6 +13,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.noise_bg {
+  /* ... */
+  background:
+    url(./assets/radial.svg);
+    filter: contrast(200%) brightness(150%) saturate(95%);
+    background-size: cover;
+    z-index: 10;
+    opacity: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.005;
+}
+
+
 a {
   font-weight: 500;
   color: #646cff;

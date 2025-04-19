@@ -319,8 +319,8 @@ function processMessageData(messageData) {
   });
 </script>
 
-<div id="container" bind:this={container}></div>
-
+<div id="container"  bind:this={container}></div>
+<!-- <div class="noise_bg"></div> -->
 {#if scene}
   <Solaris {scene} bind:this={planet} />
 {/if}

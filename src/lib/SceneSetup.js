@@ -19,21 +19,24 @@ export function setupScene(container) {
     1000
   );
   camera.position.z = 12;
+  camera.rotation.y = 0.2;
   
   // Create renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x000814);
-  
+  renderer.setClearColor(0x000000, 0);
+  renderer.sortObjects = true;
+  renderer.autoClear = false;
+
   // Add to container
   container.appendChild(renderer.domElement);
   
   // Add ambient light
-  const ambientLight = new THREE.AmbientLight(0x333333);
+  const ambientLight = new THREE.AmbientLight(0x000000);
   scene.add(ambientLight);
   
   // Add directional light
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
   directionalLight.position.set(10, 10, 10);
 
   scene.add(directionalLight);

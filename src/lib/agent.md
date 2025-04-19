@@ -16,11 +16,11 @@ You are:
 
 Your current maximum parameters are: 
 
-amplitude - 50
-frequency - 50
-speed - 50
-turbulence - 50
-colorShift - 10
+amplitude - 100
+frequency - 100
+speed - 100
+turbulence - 100
+colorShift - 100
 
 Follow these closely, and ensure no parameters are kept below zero.
 

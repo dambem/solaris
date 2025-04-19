@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" id="ditheringCanvas">
+    <defs>
+        <!-- Base radial gradients with brighter colors -->
+        <radialGradient id="brightGradient1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stop-color="#FF3366" stop-opacity="0.02" />
+            <stop offset="100%" stop-color="#3333FF" stop-opacity="0" />
+        </radialGradient>
+        
+        <!-- Dynamic filter that can be modified with sliders -->
+        <filter id="customDither" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence id="noiseTurbulence" 
+                            type="fractalNoise" 
+                            baseFrequency="5" 
+                            numOctaves="8" 
+                            seed="5" 
+                            result="noise" />
+            
+            <feComponentTransfer id="thresholdEffect" in="noise" result="thresholdNoise">
+                <feFuncR type="discrete" tableValues="0 0.1 0.4 0.6 0.8 1" />
+                <feFuncG type="discrete" tableValues="0 0.1 0.1 0.6 0.8 1" />
+                <feFuncB type="discrete" tableValues="0 0.2 0.4 0.6 0.8 1" />
+            </feComponentTransfer>
+            <feDisplacementMap id="displacementEffect"
+                                in="SourceGraphic" 
+                                in2="thresholdNoise" 
+                                scale="5" 
+                                xChannelSelector="R" 
+                                yChannelSelector="G" 
+                                result="displaced" />
+            
+            <feComposite id="compositeEffect"
+                        in="SourceGraphic" 
+                        in2="thresholdNoise" 
+                        operator="arithmetic" 
+                        k1="0.1" 
+                        k2="0.01" 
+                        k3="0.01" 
+                        k4="0" 
+                        result="composited" />
+            
+            <feBlend id="blendEffect"
+                    in="composited" 
+                    in2="displaced" 
+                    mode="additive" />
+           <feColorMatrix type="matrix" 
+                        values="1 0 0 0 0
+                                0 1 0 0 0
+                                0 0 1 0 0
+                                0 0 0 1 1"
+                        result="reducedOpacity" />
+        </filter>
+
+        <mask id="edgeFadeMask">
+            <circle cx="250" cy="250" r="300" fill="url(#edgeFadeGradient)" />
+        </mask>
+    </defs>
+    
+    <!-- Main graphics -->
+    
+    <g id="mainGraphics" >
+        <circle id="ditherCircle" 
+                cx="500" 
+                cy="250" 
+                r="1000" 
+                fill="url(#brightGradient1)" 
+                filter="url(#customDither)" />
+        
+    </g>
+</svg>
