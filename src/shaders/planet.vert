@@ -24,8 +24,7 @@
     return sin(p.x*1.5) * sin(p.y*1.8) * sin(p.z*1.3);
   }
 
-  #pragma glslify: perlin4d = require('../partials/perlin4d.glsl')
-  #pragma glslify: perlin3d = require('../partials/perlin3d.glsl')
+
 
   #define MOD3 vec3(.1094,.1034,.123)
 
@@ -38,7 +37,7 @@
         vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
         // vec3 ECposition = vec3(modelViewMatrix * gl_Vertex);
 
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelViewMatrix *  vec4(position, 1.0);
         LightIntensity  = dot(normalize( LightPos - vPosition ), vNormal);
         LightIntensity  = abs(LightIntensity);
 
@@ -50,14 +49,14 @@
         riverPattern = riverPattern*sin(noise(position)*0.1 * LightIntensity * frequency);
         
         // Add some noise based on position
-        vec3 p = position * 2.0 * noise(position)*10.0*noise(vNormal);
+        vec3 p = position * 10.0 * noise(position)*floor(noise(vNormal));
         float noiseValue = noise(p + sin(time));
         
         // Apply displacement along river patterns
         float displacement = riverPattern * amplitude;
 
         // Apply turbulence
-        displacement += noiseValue * turbulence*0.1 * cos(time*0.01);
+        displacement += noiseValue * turbulence*0.1 * cos(time*0.01)*cos(position.x);
         
         // Store displacement for fragment shader
         vDisplacement = displacement;
