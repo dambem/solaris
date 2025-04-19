@@ -64,7 +64,7 @@
                 cloudColor: { value: new THREE.Color(0xffffff) }, // Light blue for clouds
                 baseColor: { value: new THREE.Color(0x000000) }, // Royal blue for the base
                 noiseScale: { value: 2 },
-                cloudDensity: { value: 0.9 },
+                cloudDensity: { value: 0.95 },
             },
             vertexShader: vertexCloud,
             fragmentShader: fragmentCloud,

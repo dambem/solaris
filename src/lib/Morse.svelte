@@ -339,7 +339,7 @@
           on:click={togglePlay}
           class={`px-4 py-2 rounded-md font-bold ${isPlaying ? 'bg-red-800 hover:bg-red-900 text-white' : 'bg-green-800 hover:bg-green-900 text-white'}`}
         >
-          {isPlaying ? 'Stop Audio' : 'Start Audio'}
+          {isPlaying ? 'Stop Listening 🎧' : 'Start Listening 🎧'}
         </button>
       </div>
       
