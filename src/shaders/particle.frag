@@ -8,6 +8,7 @@ float rand(vec2 co) {
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+
 float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
@@ -20,6 +21,7 @@ float noise(vec2 p) {
     
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
+
 void main() {
     vec2 center = vec2(0.5, 0.5);
     vec2 toCenter = gl_PointCoord - center;
@@ -58,13 +60,8 @@ void main() {
     vec3 rimColor = vColor + vec3(0.2, 0.1, 0.0);
     baseColor *= mix(1.0, 0.3, spots * (1.0 - dist * 2.0));
 
-    // vec3 finalColor = vColor * texColor.rgb + glowColor;
     vec3 finalColor = baseColor;
-    // finalColor += rimColor * rim * 0.5;
-    // finalColor += vColor * sparkle * 0.5 * vRadius;
-    // finalColor *= glow;
 
-    // finalColor += baseColor
     finalColor += rimColor * rim * 0.5;
     finalColor += sparkleColor  * sparkle * 0.2 * vRadius; // Add sparkle effect
 

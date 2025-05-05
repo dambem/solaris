@@ -14,7 +14,7 @@
     let planetMesh, cloudMesh;
     let planetMaterial, cloudShaderMaterial;
     const planetRadius = 5;
-    const planetSegments = 2048;
+    const planetSegments = 1024;
     
     // Method that will be exposed to parent component
     export function updatePlanet(params) {
@@ -30,9 +30,9 @@
         // cloudShaderMaterial.uniforms.noiseScale.value = Math.cos(params.amplitude)*0.1;
         // cloudShaderMaterial.uniforms.cloudDensity.value = Math.sin(params.speed);
         // Increment time for animation
-        cloudShaderMaterial.uniforms.time.value = params.turbulence;
+        // cloudShaderMaterial.uniforms.time.value = params.turbulence;
 
-        planetMaterial.uniforms.time.value += 0.01;
+        planetMaterial.uniforms.time.value += 0.02;
         cloudShaderMaterial.uniforms.time.value += 0.001;
 
         // Rotate planet slowly
@@ -43,10 +43,10 @@
             planetMesh.rotation.z += 0.001;
             // planetMesh.scale.x = Math.sin(planetMesh.rotation.y)+1;
 
-            cloudMesh.position.y = 0
-            cloudMesh.position.x = 3
-            cloudMesh.rotation.y += 0.0005;
-            cloudMesh.rotation.x += 0.0005;
+            // cloudMesh.position.y = 0
+            // cloudMesh.position.x = 3
+            // cloudMesh.rotation.y += 0.0005;
+            // cloudMesh.rotation.x += 0.0005;
         }
     }
     
@@ -55,15 +55,18 @@
             console.error('Scene is not available in Solaris component');
             return;
         }
-        const cloudGeometry = new THREE.SphereGeometry(planetRadius+0.05, planetSegments, planetSegments);
+        const cloudGeometry = new THREE.SphereGeometry(planetRadius+0.5, planetSegments, planetSegments);
         cloudShaderMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 time: { value: 0 },
-                lightDir: { value: new THREE.Vector3(1, 1, 1).normalize() },
+                lightDir: { value: new THREE.Vector3(-20, -100, 1).normalize() },
                 lightColor: { value: new THREE.Color(0x000000) },
                 cloudColor: { value: new THREE.Color(0xffffff) }, // Light blue for clouds
                 baseColor: { value: new THREE.Color(0x000000) }, // Royal blue for the base
-                noiseScale: { value: 2 },
+                atmosphereColor: { value: new THREE.Color(0x222ff2)},
+                atmosphereThickness: { value: 5.15 },
+                atmosphereIntensity: { value: 20.5 },
+                noiseScale: { value: 10 },
                 cloudDensity: { value: 0.95 },
             },
             vertexShader: vertexCloud,
@@ -92,10 +95,10 @@
         });
         
         // Create the planet mesh
-        cloudMesh = new THREE.Mesh(cloudGeometry, cloudShaderMaterial);
+        // cloudMesh = new THREE.Mesh(cloudGeometry, cloudShaderMaterial);
         planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
         scene.add(planetMesh);
-        scene.add(cloudMesh)
+        // scene.add(cloudMesh)
         
         // Clean up on unmount
         return () => {
