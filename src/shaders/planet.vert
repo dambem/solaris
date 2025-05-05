@@ -24,7 +24,12 @@
     return sin(p.x*1.5) * sin(p.y*1.8) * sin(p.z*1.3);
   }
 
-
+  vec2 cartesianToSpherical(vec3 p) {
+    p = normalize(p);
+    float theta = atan(p.z, p.x);
+    float phi = asin(p.y);
+    return vec2(theta, phi);
+  }
 
   #define MOD3 vec3(.1094,.1034,.123)
 
@@ -45,6 +50,7 @@
         float longitude = asin(position.x / length(position));
         float langonitude = asin(position.z / length(position));
         float riverPattern = sin(latitude * rand(vUv)*0.1 * frequency * 2.0 + time * speed);
+        
         riverPattern = riverPattern*sin(longitude * rand(vUv)*0.1 * frequency);
         riverPattern = riverPattern*sin(noise(position)*0.1 * LightIntensity * frequency);
         

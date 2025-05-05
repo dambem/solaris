@@ -87,7 +87,7 @@
   }
 
 float func(vec2 q, out vec4 ron) {
-    q *= vec2(3.0, 1.5);
+    q *= vec2(20.0, 20.0);
     
     q += 0.03 * sin(vec2(0.27, 0.23) * time + length(q) * vec2(4.1, 4.3));
     vec2 o = fbm4_2(0.9 * q);
@@ -108,7 +108,7 @@ float func(vec2 q, out vec4 ron) {
   void main() {
     // Base blue color for water
     vec3 tot = vec3(0.0);
-    float alpha = 0.2;
+    float alpha = 0.1;
 
 
     for (int mi=0; mi<AA; mi++)
@@ -117,15 +117,15 @@ float func(vec2 q, out vec4 ron) {
       vec2 sphereCoords = cartesianToSpherical(normalize(vPosition));
 
       vec2 of = vec2(float(mi), float(ni))/float(AA) - 0.5;
-      sphereCoords += of * 0.000001;
+      sphereCoords += of * 0.00001;
 
       vec4 on = vec4(0.0);
       vec2 o, n;
       float f = func(sphereCoords, on);
 
-      vec3 col = vec3(0.2,0.1,0.4);
+      vec3 col = vec3(0.2,0.2,0.4);
 
-      col = mix( col, vec3(0.3,0.25,0.05), f );
+      col = mix( col, vec3(0.1,0.25,0.05), f );
       col = mix( col, vec3(0.9,0.9,0.9), dot(n,n) );
       col = mix( col, vec3(0.5,0.2,0.2), 0.5*o.y*o.y );
       col = mix( col, vec3(0.3,0.2,0.4), 0.5*smoothstep(1.2, 1.3, abs(n.y)+abs(n.x) ));
@@ -154,7 +154,7 @@ float func(vec2 q, out vec4 ron) {
       vec3 finalColor = mix(
         col,
         vec3(1.0*colorShift+rand(vUv)*0.9, 3.0*colorShift, 1.0*colorShift),
-        abs(f - 0.5) + colorShift * fresnel
+        abs(f - 0.7) + colorShift * fresnel
       );
 
       if (f > 0.55) {
@@ -175,7 +175,7 @@ float func(vec2 q, out vec4 ron) {
     tot /= float(AA * AA);
     vec3 viewDirection = normalize(-vPosition);
     float fresnel = dot(viewDirection, vNormal);
-    fresnel = pow(fresnel, 5.0);
+    fresnel = pow(fresnel, 7.0);
 
     float atmosphere = calculateAtmosphere(
         vPosition,
